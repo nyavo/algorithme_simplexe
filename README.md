@@ -9,5 +9,6 @@ Configuration :
 Hope this application will help you with your project.
 
 You can contact me at :
-https://www.facebook.com/rina.leromain
+https://www.facebook.com/rina.leromain 
+Or 
 nyavo01@gmail.com
