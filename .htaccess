@@ -14,7 +14,7 @@ RewriteEngine on
 #
 
 #   Toutes les URL qui ne correspondent pas à ces masques sont réécrites.
-RewriteCond $1 !^(index\.php|assets/|robots\.txt|invoices/|uploads/|sogenactif/|candidates/|downloads/)
+RewriteCond $1 !^(index\.php|static/|robots\.txt|invoices/|uploads/|sogenactif/|candidates/|downloads/)
 
 #   Toutes les autres URL vont être redirigées vers le fichier index.php.
 RewriteRule ^(.*)$ index.php/$1 [L]

@@ -25,7 +25,7 @@ class MY_Controller extends CI_Controller {
 		$this->load->css('http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&subset=latin,cyrillic-ext,latin-ext');
 		$this->load->css('assets/css/bootstrap-table.css');
 		$this->load->css('assets/css/concours.css');*/
-		$this->load->css('assets/css/bootstrap.min.css');
+		/*$this->load->css('assets/css/bootstrap.min.css');
 		$this->load->css('assets/css/perso.css');
 
 		// Chargement des fichiers JS
@@ -42,6 +42,7 @@ class MY_Controller extends CI_Controller {
 		//$this->load->js('assets/js/modernizr.js');
 
 		$this->load->js('assets/js/bootstrap.min.js');
+		$this->load->js('assets/js/perso.js');
 
 		/*$this->load->js('assets/js/jquery.cookie.js');
 

@@ -1,67 +1,75 @@
-<table border="1" cellspacing="0" cellpadding="10">
+<div class="row well center">
+<table border="1" cellspacing="0" cellpadding="10" class="table">
 	<tr>
-		<td colspan="2" style="text-align:center;">Coefficient dans Z</td>
+		<th colspan="2" style="text-align:center;"><h3>Coefficient dans Z</h3></th>
 		
 		<?php foreach($coef_dans_z as $key=>$value){
 		?>
-			<td><?php echo affichage_expression($value)?></td>
+			<th style="font-size: 18px"><?php echo affichage_expression($value)?></th>
 		<?php 
 		}?>
-		<td></td>
+		
 	</tr>
 	<tr>
-		<td colspan="2" style="text-align:center;">Base</td>
+		<th colspan="2" style="text-align:center;"><h3>Base</h3></th>
 		<?php for($i=0;$i<$nb_equation+$nb_variable+$nb_variable_artificielle;$i++){
 		?>
-		<td>x<?php echo $i+1?></td>
+		<td><h3>x<?php echo $i+1?></h3></td>
 		<?php
 		}?>
-		<td>bi</td>
+		<th><h3>bi</h3></th>
+		<?php if(!isset($ok)){?><th><h3>bi/xij</h3></th><?php }?>
 	</tr>
 	<tr>
-		<td>Coef. Z</td>
-		<td>Var. base</td>
+		<th><h3>Coef. Z</h3></th>
+		<th><h3>Var. base</h3></th>
 	</tr>
 	<?php for($i=0;$i<$nb_equation;$i++){
 		?>
 		<tr>
 				<td><?php echo affichage_expression($var_coef_base[$i])?></td>
-				<td><?php echo $var_coef_base[$i]['libelle']?></td>
+				<th><h3><?php echo $var_coef_base[$i]['libelle']?></h3></th>
 		<?php 
 		for($j=0;$j<$nb_equation+$nb_variable+$nb_variable_artificielle;$j++){
 			?>
 				<td 
 				<?php 
-					echo ($i==$pivot['ligne'])&&($j==$pivot['colonne']) ? 'style="color: red"' : '';
+					echo ($i==$pivot['ligne'])&&($j==$pivot['colonne']&&!isset($ok)) ? 'class="pivot"' : '';
 				?>> <?php echo affichage_fraction($matrice[$i][$j])?></td>
 			
 			<?php 
 		}
 		?>
 			<td><?php echo affichage_expression_eps($b[$i])?></td>
+			<?php if(!isset($ok)){?><td <?php 
+					echo ($i==$pivot['ligne']) ? 'class="composant_pivot"' : '';
+				?>><?php if($rapport[$i]['numerique']['numerateur']==0 && $rapport[$i]['litterale']['numerateur'] == 0) echo "-";
+			else echo affichage_expression_eps($rapport[$i])?></td><?php }?>
 		</tr>
 		<?php 
 	}?>
 	<tr>
-		<td colspan="2" style="text-align:center;">Zj</td>
+		<td colspan="2" style="text-align:center;"><h3>Zj</h3></td>
 		<?php foreach($ZJ as $key=>$value){
 			?>
 			<td><?php echo affichage_expression($value)?></td>
 			<?php
 		}?>
-		<td rowspan="2">Z = <?php echo affichage_expression($Z)?></td>
+		<td rowspan="2"><h3>Z = <?php echo affichage_expression($Z)?></h3></td>
 	</tr>
 	<tr>
-		<td colspan="2" style="text-align:center;">Delta J</td>
-		<?php foreach ($delta_J as $key => $value) {
+		<td colspan="2" style="text-align:center;"><h3>Delta J</h3></td>
+		<?php $i=0;foreach ($delta_J as $key => $value) {
 			?>
-			<td><?php echo affichage_expression($value)?></td>
+			<td <?php 
+					echo ($i==$pivot['colonne']&&!isset($ok)) ? 'class="composant_pivot"' : '';
+				?>><?php echo affichage_expression($value);$i++;?></td>
 			<?php
 		}?>
 	</tr>
 </table>
 <form action="<?php echo base_url('solution/resolution')?>" method="post">
-	<input type="submit" value="suivant">
+	<?php if(!isset($ok)){?><button class="btn btn-primary" type="submit">Suivant</button><?php }?>
 	<?php for($i=0;$i<$nb_equation;$i++){
 		for($j=0;$j<$nb_equation+$nb_variable+$nb_variable_artificielle;$j++){
 			?>
@@ -74,7 +82,7 @@
 		<input type="hidden" name="indice<?php echo $i?>" value="<?php echo $var_coef_base[$i]['indice']?>">
 		<input type="hidden" name="lib_coef_z<?php echo $i?>" value="<?php echo $var_coef_base[$i]['libelle']?>">
 		<input type="hidden" name="var_coef_base_numerique<?php echo $i?>" value="<?php echo $var_coef_base[$i]['numerique']['numerateur'].'/'.$var_coef_base[$i]['numerique']['denominateur']?>">
-		<input type="hidden" name="var_coef_base_litterale<?php echo $i?>" value="<?php echo $var_coef_base[$i]['litterale']['numerateur'].'/'.$var_coef_base[$i]['litterale']['denominateur']?>"><br><br>
+		<input type="hidden" name="var_coef_base_litterale<?php echo $i?>" value="<?php echo $var_coef_base[$i]['litterale']['numerateur'].'/'.$var_coef_base[$i]['litterale']['denominateur']?>">
 		<?php
 	}?>
 	<?php for($i=0;$i<$nb_equation+$nb_variable+$nb_variable_artificielle;$i++) {
@@ -89,8 +97,25 @@
 	}?>
 	<input type="hidden" name="nb_variable" value="<?php echo $nb_variable?>">
 	<input type="hidden" name="nb_equation" value="<?php echo $nb_equation?>">
-	<!-- <input type="hidden" name="nb_equation_suppl" value="<?php echo $nb_equation_suppl?>"> -->
 	<input type="hidden" name="nb_variable_artificielle" value="<?php echo $nb_variable_artificielle?>">
 	<input type="hidden" name="type" value="<?php echo $type?>">
-	
 </form>
+</div>
+
+<div class="row well center" <?php if(!isset($ok)) echo "style='display:none'"?>>
+<?php if(isset($ok)){?>
+	<h1>Solution</h1><br>
+	<?php for($i=0;$i<$nb_variable;$i++){?>
+	<div class="row"><h3>x<?php echo $i+1;?> = <?php echo affichage_expression($resultat[$i])?></h3></div>
+<?php }
+}?><br>
+<div class="row"><h3>Z = <?php {
+	if($type == "min") {
+		$Z["numerique"] = oppose($Z["numerique"]);
+		$Z['litterale'] = oppose($Z['litterale']);
+		echo affichage_expression($Z);
+	}
+	else echo affichage_expression($Z);
+}?></h3></div>
+<a class="btn btn-primary" href="<?php echo base_url("choix")?>" >Nouveau calcul</a>
+</div>

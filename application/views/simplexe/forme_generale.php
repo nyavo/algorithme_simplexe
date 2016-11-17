@@ -2,6 +2,7 @@
 <?php
 $i = 0;
 foreach ($matrice as $key => $array_value) {
+	?><div class="row"><h3><?php 
 	$debut = true;
 	foreach ($array_value as $key => $value) {
 		?>
@@ -46,11 +47,11 @@ foreach ($matrice as $key => $array_value) {
 	}
 	echo " = " . affichage_expression($b[$i]);
 	$i++;
-	echo "<br><br>";
+	echo "</h3></div><br>";
 }?>
 
 <?php if($type=="min"){
-	echo "- MAX ( -Z = ";
+	echo "<h3>- MAX ( -Z = ";
 	for($i=0;$i<($nb_equation+$nb_variable+$nb_equation_suppl+$nb_variable_artificielle);$i++){
 		if($i<$nb_variable)	$coef_x[$i]['numerateur'] = -$coef_x[$i]['numerateur'];
 		if($i==0) {
@@ -104,7 +105,7 @@ foreach ($matrice as $key => $array_value) {
 	}
 }
 else{
-	echo "MAX ( Z = ";
+	echo "<h3>MAX ( Z = ";
 	for($i=0;$i<($nb_equation+$nb_variable+$nb_equation_suppl+$nb_variable_artificielle);$i++){
 		if($i==0) {
 			$str = affichage_fraction($coef_x[$i]);
@@ -149,7 +150,7 @@ else{
 	}
 }
 
-echo ")<br><br>";
+echo ")</h3><br>";
 ?>
 <?php for($i=0;$i<$nb_equation+$nb_equation_suppl;$i++){
 	?>

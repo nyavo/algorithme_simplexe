@@ -1,11 +1,11 @@
 <!-- <div id="content_app"> -->
 	<!-- start: Content -->
-	<div id="content" class="span12">
+	<div id="content" class="span11 center">
+	
 
 		
 			<?php echo $output;?>
 		
-
 		<!--/row-->
 
 		
