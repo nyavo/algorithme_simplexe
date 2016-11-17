@@ -496,8 +496,8 @@ if ( ! function_exists('litterale_numerique_eps')){
  return $premier;
  }
  }
-
- /*if ( ! function_exists('rm_zero')){
+ /*
+ if ( ! function_exists('rm_zero')){
  function rm_zero($tab){
  $res = array();
  foreach ($tab as $key => $value) {
@@ -621,8 +621,22 @@ if ( ! function_exists('pgcd')){
 			return $nombre2; // retourne le resultat
 			*/
 
-		if($nombre2 == 0) return $nombre;
+		if($nombre2 == 0 && $nombre != 0) return $nombre;
+		elseif ($nombre2 == 0 && $nombre == 0 ) return 1;
 		else return pgcd($nombre2,$nombre%$nombre2);
+	}
+}
+
+if ( ! function_exists('ppcm')){
+	function ppcm($nombre,$nombre2){
+		//if(($nombre =! "0") && ($nombre2 =! "0")){
+			$ppcm = ($nombre*$nombre2)/pgcd($nombre, $nombre2);
+			//echo "(".$nombre ."*".$nombre2.")/".pgcd($nombre, $nombre2).'<br>';
+		//}
+		//else $ppcm = 1;
+		
+		$ppcm = $ppcm==0 ? 1 : $ppcm;
+		return $ppcm;
 	}
 }
 
@@ -650,17 +664,43 @@ if ( ! function_exists('irreductible')){
 	}
 }
 
+if ( ! function_exists('irreductible_tab')){
+	function irreductible_tab($tab){
+		$num = $tab['numerateur'];
+		$denom = $tab['denominateur'];
+		if($num>$denom){
+			if($num >= 0) $pgcd = pgcd($num, $denom);
+			else $pgcd = pgcd(-$num, $denom);
+		}
+		else{
+			if($num >= 0) $pgcd = pgcd($denom, $num);
+			else $pgcd = pgcd($denom, -$num);
+		}
+
+		//var_dump($pgcd);
+		if($pgcd != 1){
+			$res['numerateur'] = $num / $pgcd ;
+			$res['denominateur'] = $denom / $pgcd ;
+		}
+		else{
+			$res['numerateur'] = $num ;
+			$res['denominateur'] = $denom ;
+		}
+		return $res;
+	}
+}
+
 if ( ! function_exists('affiche_fraction')){
 	function affichage_fraction($fraction){
 		if($fraction["numerateur"] == 0) return 0;
 		else{
 			if(abs($fraction["denominateur"]) == 1) {
-				if(signe($fraction)< 0)return -abs($fraction["numerateur"]);
-				else return abs($fraction['numerateur']);
+				if(signe($fraction)< 0)return filtre_nombre(-abs($fraction["numerateur"]));
+				else return filtre_nombre(abs($fraction['numerateur']));
 			}
 			else {
-				if($fraction['numerateur'] * $fraction['denominateur'] < 0) return "-(". abs($fraction['numerateur']) ."/" . abs($fraction['denominateur']) . ")";
-				else return "(". abs($fraction['numerateur']) ."/" . abs($fraction['denominateur']) . ")";
+				if($fraction['numerateur'] * $fraction['denominateur'] < 0) return "-(". filtre_nombre(abs($fraction['numerateur'])) ."/" . filtre_nombre(abs($fraction['denominateur'])) . ")";
+				else return "(". filtre_nombre(abs($fraction['numerateur'])) ."/" . filtre_nombre(abs($fraction['denominateur'])) . ")";
 			}
 		}
 	}
@@ -771,6 +811,92 @@ if( ! function_exists('oppose')){
 	function oppose($tab){
 		foreach ($tab as $key=>$value) {
 			$res[$key] = fraction_soustraction(transformation(0),$value);
+		}
+		return $res;
+	}
+}
+
+if ( ! function_exists('denominateur_commun')){
+	function denominateur_commun($row){
+		$denominateur = 1;
+		foreach ($row as $value) {
+			$denominateur *= $value['denominateur'];
+		}
+		return $denominateur;
+	}
+}
+
+if ( ! function_exists('ppcm_multiple')){
+	function ppcm_multiple($row,$i){
+		if($i==count($row)-2) return ppcm($row[$i]['denominateur'],$row[$i+1]['denominateur']);
+		else return abs(ppcm($row[$i]['denominateur'],ppcm_multiple($row, $i+1)));
+	}
+}
+
+if ( ! function_exists('pgcd_multiple')){
+	function pgcd_multiple($row,$i){
+		//var_dump(count($row));
+		if($i==count($row)-2) return pgcd($row[$i]['numerateur'], $row[$i+1]['numerateur']);
+		else return abs(pgcd($row[$i]['numerateur'],pgcd_multiple($row, ($i+1))));
+	}
+}
+
+if ( ! function_exists('rm_zero')){
+	function rm_zero($row){
+		$res = array();
+		foreach ($row as $key => $value) {
+			if($value['numerateur']!=0) $res[]=$value;
+		}
+		return $res;
+	}
+}
+
+if ( ! function_exists('etat_coef_x')){
+	function etat_coef_x($coef_x){
+		$fraction = true;
+		foreach ($coef_x as $value) {
+			if($value['denominateur']==1) {
+				$fraction = false;
+				break;	
+			}
+		}
+		
+		$entier = true;
+		foreach ($coef_x as $value) {
+			if($value['denominateur']!=1) {
+				$entier = false;
+				break;	
+			}
+		}
+		
+		$data['fraction'] = $fraction;
+		$data['entier'] = $entier;
+		return $data;
+	}
+}
+
+if ( ! function_exists('filtre_nombre')){
+	function filtre_nombre($nombre){
+		$nb = "$nombre";
+		$longueur = strlen($nb);
+		$unite = 1;
+		$tmp = array();
+		$i = $longueur-1;
+
+		do{
+			if((($unite)%3)!=0){
+				array_push($tmp,$nb[$i]);$unite++;
+			}
+			else {
+				array_push($tmp,$nb[$i]);array_push($tmp,' ');$unite=1;
+			}
+			$i--;
+		}while($i>=0);
+
+		$res = '';
+
+		for($i=sizeof($tmp)-1;$i>=0;$i--){
+			$res = $res.$tmp[$i];
 		}
 		return $res;
 	}

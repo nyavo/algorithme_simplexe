@@ -10,7 +10,7 @@ foreach ($matrice as $key => $array_value) {
 	type="hidden" name="<?php echo $i.$key ?>" value="<?php echo $value['numerateur']."/".$value['denominateur']?>">
 		<?php
 		if(signe($value) < 0){
-			if(affichage_fraction($value) == -1){
+			if(affichage_fraction($value) == "-1"){
 				if(!$debut) echo " - x".($key+1);
 				else {
 					echo "- x".($key+1);
@@ -26,8 +26,8 @@ foreach ($matrice as $key => $array_value) {
 			}
 		}
 		else{
-			if(affichage_fraction($value)!=0){
-				if(affichage_fraction($value) == 1) {
+			if(affichage_fraction($value)!="0"){
+				if(affichage_fraction($value) == "1") {
 
 					if(!$debut) echo " + x".($key+1);
 					else {
@@ -150,7 +150,7 @@ else{
 	}
 }
 
-echo ")</h3><br>";
+echo ")    (*" . affichage_fraction($multiplicateur) . ")</h3><br>";
 ?>
 <?php for($i=0;$i<$nb_equation+$nb_equation_suppl;$i++){
 	?>
@@ -164,7 +164,8 @@ echo ")</h3><br>";
 <input type="hidden" name="nb_equation" value="<?php echo $nb_equation?>">
 <input type="hidden" name="nb_equation_suppl" value="<?php echo $nb_equation_suppl?>">
 <input type="hidden" name="nb_variable_artificielle" value="<?php echo $nb_variable_artificielle?>">
-<input type="submit" value="Résoudre">
+<input type="hidden" name="multiplicateur" value="<?php echo $multiplicateur['numerateur'].'/'.$multiplicateur['denominateur']?>">
+<button type="submit" class="btn btn-primary">Résoudre</button>
 </form>
 
 

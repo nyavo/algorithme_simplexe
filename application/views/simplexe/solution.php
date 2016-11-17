@@ -99,23 +99,34 @@
 	<input type="hidden" name="nb_equation" value="<?php echo $nb_equation?>">
 	<input type="hidden" name="nb_variable_artificielle" value="<?php echo $nb_variable_artificielle?>">
 	<input type="hidden" name="type" value="<?php echo $type?>">
+	<input type="hidden" name="multiplicateur" value="<?php echo $multiplicateur['numerateur'].'/'.$multiplicateur['denominateur']?>">
 </form>
 </div>
 
 <div class="row well center" <?php if(!isset($ok)) echo "style='display:none'"?>>
-<?php if(isset($ok)){?>
+<?php if(isset($ok) && $ok==true){?>
 	<h1>Solution</h1><br>
 	<?php for($i=0;$i<$nb_variable;$i++){?>
 	<div class="row"><h3>x<?php echo $i+1;?> = <?php echo affichage_expression($resultat[$i])?></h3></div>
 <?php }
-}?><br>
+?><br>
 <div class="row"><h3>Z = <?php {
 	if($type == "min") {
 		$Z["numerique"] = oppose($Z["numerique"]);
-		$Z['litterale'] = oppose($Z['litterale']);
-		echo affichage_expression($Z);
+		$Z["litterale"] = oppose($Z["litterale"]);
 	}
-	else echo affichage_expression($Z);
-}?></h3></div>
-<a class="btn btn-primary" href="<?php echo base_url("choix")?>" >Nouveau calcul</a>
+	$Z_final["numerique"] = fraction_multiplication($Z["numerique"],$multiplicateur);
+	$Z_final['litterale'] = fraction_multiplication($Z['litterale'],$multiplicateur);
+	echo affichage_expression($Z) . ' * ' . affichage_fraction($multiplicateur) . " = ";
+	echo affichage_expression($Z_final) . '</h3></div>';
+	
+	}
+}
+elseif(isset($pas_de_solution) && $pas_de_solution==true){
+	?> 
+	<h1>Pas de solution : Contraintes incompatibles</h1>
+	<?php 
+}?>
+<a class="btn btn-primary" href="<?php echo base_url()?>" >Nouveau calcul</a>
+</div>
 </div>

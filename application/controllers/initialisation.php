@@ -35,12 +35,94 @@ class initialisation extends  MY_Controller {
 		for($i=0;$i<$nb_equation;$i++){
 			$row = array();
 			for($j=0;$j<$nb_variable;$j++){
-				$val = $this->input->post($i.$j) ? transformation($this->input->post($i.$j)) : transformation(0);
+				$tmp = $this->input->post($i.$j) ? $this->input->post($i.$j) : "0/1";
+				$tmp = explode('/',$tmp);
+				if(count($tmp)==1){
+					$val = transformation($tmp[0]);
+				}
+				else{
+					//$test = $tmp[0].'/'.$tmp[1];
+					$val = irreductible($tmp[0],$tmp[1]);
+					//var_dump($val);
+				}
+
+				//$val = $this->input->post($i.$j) ? transformation($this->input->post($i.$j)) : transformation(0);
 				$row[$j] = $val;
-				$coef_x[$j] = $this->input->post("coef_x".($j+1)) ? transformation($this->input->post("coef_x".($j+1))): transformation(0) ;
+				//var_dump($val);
+
+				$tmp = $this->input->post("coef_x".($j+1)) ? $this->input->post("coef_x".($j+1)) : '0/1';
+				$tmp = explode("/", $tmp);
+				if(count($tmp)==1){
+					$val = transformation($tmp[0]);
+				}
+				else{
+					$val = irreductible($tmp[0],$tmp[1]);
+				}
+
+				$coef_x[$j] = $val;
 			}
-			$b_tmp["numerique"] = $this->input->post("b_numerique".$i) ? transformation($this->input->post("b_numerique".$i)) : transformation(0) ;
-			$b_tmp["litterale"] = $this->input->post("b_litterale".$i) ? transformation($this->input->post("b_litterale".$i)) : transformation(0) ;
+
+			$val = $this->input->post("b_numerique".$i) ? $this->input->post("b_numerique".$i) : "0/1";
+			$str = explode("/", $val);
+
+			if(count($str)==1){
+				$b_numerique = transformation($str[0]);
+			}
+			else{
+				$b_numerique = irreductible($str[0],$str[1]);
+			}
+
+			$denom_commun_row = denominateur_commun($row);
+			$b_numerique['numerateur'] *= $denom_commun_row;
+
+			/*$b_tmp["numerique"] = $this->input->post("b_numerique".$i) ? transformation($this->input->post("b_numerique".$i)) : transformation(0) ;
+			 $b_tmp["litterale"] = transformation(0) ;
+			 $denom_commun_row = denominateur_commun($row);
+			 $b_tmp['numerique']['numerateur'] *= $denom_commun_row;
+			 $b_tmp['litterale']['numerateur'] *= $denom_commun_row;*/
+
+			//var_dump(denominateur_commun($b_tmp));
+			//$denom_commun_b = denominateur_commun($b_tmp);
+
+			for($l=0;$l<$nb_variable;$l++){
+				$row[$l]['numerateur'] *= (($b_numerique['denominateur']*$denom_commun_row)/$row[$l]['denominateur']);
+				$row[$l]['denominateur'] = 1;
+			}
+			$b_numerique['denominateur']=1;
+
+			$valeur_a_traiter = $row;
+			$valeur_a_traiter[]=$b_numerique;
+
+			$pgcd_ligne_courant = pgcd_multiple($valeur_a_traiter, 0);
+
+
+			for($l=0;$l<$nb_variable;$l++){
+				$row[$l]['numerateur'] /= abs($pgcd_ligne_courant);
+			}
+			$b_numerique['numerateur'] /= abs($pgcd_ligne_courant);
+
+			$b_tmp['numerique'] = $b_numerique;
+			$b_tmp['litterale'] = transformation(0);
+
+			$etat_coef_x = etat_coef_x($coef_x);
+
+			if($etat_coef_x['fraction']){
+				$ppcm = abs(ppcm_multiple($coef_x, 0));
+				for($l=0;$l<$nb_variable;$l++){
+					$coef_x[$l] = irreductible_tab(fraction_multiplication($coef_x[$l], transformation($ppcm)));
+				}
+				$multipl["numerateur"] = 1;
+				$multipl["denominateur"] = $ppcm;
+			}
+			elseif($etat_coef_x['entier']){
+				$pgcd_Z = abs(pgcd_multiple($coef_x,0));
+				for($l=0;$l<$nb_variable;$l++){
+					$coef_x[$l] = irreductible_tab(fraction_division($coef_x[$l], transformation($pgcd_Z)));
+				}
+				$multipl['numerateur'] = $pgcd_Z;
+				$multipl['denominateur'] = 1;
+			}
+
 			$row_negatif = negatif($row);
 			if(!$row_negatif){
 				switch($operation[$i]){
@@ -82,10 +164,10 @@ class initialisation extends  MY_Controller {
 			}
 			else{
 				switch($operation[$i]){
-					
+
 					case "sup" :{
 						$op[] = "inf";
-						
+
 						$row=oppose($row);
 						$row[$nb_variable + $id_eq] = transformation(1);
 						$id_eq++;
@@ -125,7 +207,7 @@ class initialisation extends  MY_Controller {
 					}
 				}
 			}
-			
+
 			//var_dump(oppose($row));
 		}
 		$data['nb_variable_artificielle'] = $nb_variable_artificielle;
@@ -136,6 +218,7 @@ class initialisation extends  MY_Controller {
 		$data["b"] = $b;
 		//var_dump($matrice);
 		$data["coef_x"] = $coef_x;
+		$data['multiplicateur'] = $multipl;
 		//var_dump($matrice);
 		$this->load->view("simplexe/forme_generale",$data);
 	}

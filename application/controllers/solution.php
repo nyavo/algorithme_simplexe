@@ -11,6 +11,12 @@ class solution extends  MY_Controller {
 		$data['nb_equation_suppl'] = $nb_equation_suppl = $this->input->post('nb_equation_suppl');
 		$data['nb_variable_artificielle'] = $nb_variable_artificielle = $this->input->post('nb_variable_artificielle');
 		$data['type']= $type = $this->input->post('type');
+
+		$multiplicateur = $this->input->post('multiplicateur');
+		$multiplicateur = explode('/', $multiplicateur);
+		$data['multiplicateur']['numerateur'] = $multiplicateur[0];
+		$data['multiplicateur']['denominateur'] = $multiplicateur[1];
+
 		$matrice=array();
 		$nb_equation += $nb_equation_suppl;
 		$data['nb_equation'] = $nb_equation;
@@ -84,6 +90,15 @@ class solution extends  MY_Controller {
 		$data['var_coef_base']=$var_coef_base;
 		//var_dump($var_coef_base);
 
+		/*
+		 * Vérification des résultats si contraintes incompatibles
+		 */
+
+
+		/*
+		 * Fin vérification
+		 */
+
 
 		$entrant = entrant($delta_J, $coef_dans_z, $nb_variable_artificielle);
 		//var_dump($entrant);
@@ -91,6 +106,12 @@ class solution extends  MY_Controller {
 		//var_dump($sortant);
 		$pivot = pivot($matrice, $entrant, $sortant);
 		//var_dump($pivot);
+
+		if($delta_J[$entrant['indice']]['numerique']['numerateur']==0 && $delta_J[$entrant['indice']]['litterale']['numerateur']==0){
+			$data['ok'] = false;
+			$data['pas_de_solution'] = true;
+		}
+
 		$data['entrant'] = $entrant;
 		$data['sortant'] = $sortant;
 		$data['pivot'] = $pivot;
@@ -114,6 +135,10 @@ class solution extends  MY_Controller {
 		$data['nb_variable'] = $nb_variable = $this->input->post('nb_variable');
 		$data['nb_variable_artificielle'] = $nb_variable_artificielle = $this->input->post("nb_variable_artificielle");
 		$data['type'] = $type = $this->input->post('type');
+		$multiplicateur = $this->input->post('multiplicateur');
+		$multiplicateur = explode('/', $multiplicateur);
+		$data['multiplicateur']['numerateur'] = $multiplicateur[0];
+		$data['multiplicateur']['denominateur'] = $multiplicateur[1];
 		$matrice = array();
 		$coef_dans_z = array();
 		$ZJ = array();
@@ -145,7 +170,7 @@ class solution extends  MY_Controller {
 			$str = explode("/", $val);
 			$b[$i]["numerique"]['numerateur'] = $str[0];
 			$b[$i]["numerique"]['denominateur'] = $str[1];
-				
+
 			$val = $this->input->post("b_litterale".$i) ? $this->input->post("b_litterale".$i):"0/1";
 			$str = explode("/", $val);
 			$b[$i]["litterale"]['numerateur'] = $str[0];
@@ -154,7 +179,7 @@ class solution extends  MY_Controller {
 
 		for($j=0;$j<$nb_equation+$nb_variable+$nb_variable_artificielle;$j++){
 			//initialisation de la coefficient dans z
-				
+
 			$num = $this->input->post("coef_dans_z_numerique".$j) ? $this->input->post("coef_dans_z_numerique".$j):"0/1";
 			$litter = $this->input->post("coef_dans_z_litterale".$j) ? $this->input->post("coef_dans_z_litterale".$j):"0/1";
 			$str = explode("/", $num);
@@ -211,7 +236,7 @@ class solution extends  MY_Controller {
 		$entrant = entrant($a, $coef_dans_z, $nb_variable_artificielle);
 		$sortant = sortant($res_tmp['b'], $res_tmp['matrice'], $entrant, $nb_equation, $res_tmp['var_coef_base'], $nb_variable_artificielle);
 		$data['pivot'] = $pivot_new = pivot($res_tmp['matrice'], $entrant, $sortant);
-		
+
 		/*
 		 * fin calcul
 		 */
@@ -238,7 +263,7 @@ class solution extends  MY_Controller {
 			}
 			$data['resultat'] = $resultat;
 		}
-		
+
 		for($i=0;$i<$nb_equation;$i++){
 			if($res_tmp['matrice'][$i][$pivot_new['colonne']]['numerateur']!=0) {
 				$rapport[$i]["numerique"] = fraction_division($res_tmp['b'][$i]["numerique"],$res_tmp['matrice'][$i][$pivot_new['colonne']]);
@@ -247,7 +272,7 @@ class solution extends  MY_Controller {
 			else $rapport[$i]["numerique"] = $rapport[$i]["litterale"] = transformation(0);
 		}
 		$data['rapport'] = $rapport;
-		
+
 		$data['var_coef_base']=$res_tmp['var_coef_base'];
 		$data['coef_dans_z']=$res_tmp["coef_dans_z"];
 		$this->load->view('simplexe/solution',$data);
