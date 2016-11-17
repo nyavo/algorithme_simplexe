@@ -8,10 +8,13 @@ class solution extends  MY_Controller {
 
 	public function index(){
 		$data['nb_variable'] = $nb_variable = $this->input->post('nb_variable');
-		$data['nb_equation'] = $nb_equation = $this->input->post('nb_equation');
+		$nb_equation = $this->input->post('nb_equation');
+		$data['nb_equation_suppl'] = $nb_equation_suppl = $this->input->post('nb_equation_suppl');
 		$data['nb_variable_artificielle'] = $nb_variable_artificielle = $this->input->post('nb_variable_artificielle');
 		$data['type']= $type = $this->input->post('type');
 		$matrice=array();
+		$nb_equation += $nb_equation_suppl;
+		$data['nb_equation'] = $nb_equation;
 		$coef_dans_z = array();
 		$b = array();
 		$var_coef_base = array();
@@ -47,7 +50,7 @@ class solution extends  MY_Controller {
 			$b[$i]['litterale']['numerateur'] = $str[0];
 			$b[$i]['litterale']['denominateur'] = $str[1];
 		}
-
+		//var_dump($matrice);
 		//initialisation des variables de bases
 		$j=0;
 		for($i=0;$i<$nb_equation;$i++){
@@ -61,8 +64,8 @@ class solution extends  MY_Controller {
 			else{
 				$var_coef_base[$i]["numerique"] = $coef_dans_z[$nb_variable + $nb_equation + $j]["numerique"];
 				$var_coef_base[$i]["litterale"] = $coef_dans_z[$nb_variable + $nb_equation + $j]["litterale"];
-				$var_coef_base[$i]["libelle"] = "x".($nb_variable + $nb_equation + $j + 1);
-				$var_coef_base[$i]["indice"] = $nb_variable + $nb_equation + $j + 1;
+				$var_coef_base[$i]["libelle"] = "x".($nb_variable + $nb_equation + $j+1);
+				$var_coef_base[$i]["indice"] = $nb_variable + $nb_equation + $j;
 				$j++;
 			}
 		}
@@ -93,6 +96,7 @@ class solution extends  MY_Controller {
 		$data['sortant'] = $sortant;
 		$data['pivot'] = $pivot;
 		$data['matrice'] = $matrice;
+		//var_dump($matrice);
 		$this->output->set_title('Solution');
 		$this->load->view('simplexe/solution',$data);
 	}

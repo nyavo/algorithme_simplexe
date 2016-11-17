@@ -25,10 +25,12 @@ class MY_Controller extends CI_Controller {
 		$this->load->css('http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800&subset=latin,cyrillic-ext,latin-ext');
 		$this->load->css('assets/css/bootstrap-table.css');
 		$this->load->css('assets/css/concours.css');*/
+		$this->load->css('assets/css/bootstrap.min.css');
+		$this->load->css('assets/css/perso.css');
 
 		// Chargement des fichiers JS
 
-		/*$this->load->js('assets/js/jquery-1.9.1.min.js');
+		$this->load->js('assets/js/jquery-1.9.1.min.js');
 		$this->load->js('assets/js/jquery-1.9.1.min.js');
 		$this->load->js('assets/js/jquery-migrate-1.0.0.min.js');
 
@@ -37,11 +39,11 @@ class MY_Controller extends CI_Controller {
 		$this->load->js('assets/js/jquery.ui.touch-punch.js');
 		
 
-		$this->load->js('assets/js/modernizr.js');
+		//$this->load->js('assets/js/modernizr.js');
 
 		$this->load->js('assets/js/bootstrap.min.js');
 
-		$this->load->js('assets/js/jquery.cookie.js');
+		/*$this->load->js('assets/js/jquery.cookie.js');
 
 		$this->load->js('assets/js/fullcalendar.min.js');
 

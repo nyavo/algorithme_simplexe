@@ -89,6 +89,8 @@
 	}?>
 	<input type="hidden" name="nb_variable" value="<?php echo $nb_variable?>">
 	<input type="hidden" name="nb_equation" value="<?php echo $nb_equation?>">
+	<!-- <input type="hidden" name="nb_equation_suppl" value="<?php echo $nb_equation_suppl?>"> -->
 	<input type="hidden" name="nb_variable_artificielle" value="<?php echo $nb_variable_artificielle?>">
 	<input type="hidden" name="type" value="<?php echo $type?>">
+	
 </form>

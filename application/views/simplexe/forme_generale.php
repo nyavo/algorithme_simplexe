@@ -51,7 +51,7 @@ foreach ($matrice as $key => $array_value) {
 
 <?php if($type=="min"){
 	echo "- MAX ( -Z = ";
-	for($i=0;$i<($nb_equation+$nb_variable+$nb_variable_artificielle);$i++){
+	for($i=0;$i<($nb_equation+$nb_variable+$nb_equation_suppl+$nb_variable_artificielle);$i++){
 		if($i<$nb_variable)	$coef_x[$i]['numerateur'] = -$coef_x[$i]['numerateur'];
 		if($i==0) {
 			if(affichage_fraction($coef_x[$i]) == 1){
@@ -87,7 +87,7 @@ foreach ($matrice as $key => $array_value) {
 				<?php 
 			}
 			else{
-				if($i<$nb_variable+$nb_equation){
+				if($i<$nb_variable+$nb_equation+$nb_equation_suppl){
 					echo " + 0 x".($i+1);
 					?>
 					<input type="hidden" name="coef_x<?php echo $i+1?>" value="0/1">
@@ -105,7 +105,7 @@ foreach ($matrice as $key => $array_value) {
 }
 else{
 	echo "MAX ( Z = ";
-	for($i=0;$i<($nb_equation+$nb_variable+$nb_variable_artificielle);$i++){
+	for($i=0;$i<($nb_equation+$nb_variable+$nb_equation_suppl+$nb_variable_artificielle);$i++){
 		if($i==0) {
 			$str = affichage_fraction($coef_x[$i]);
 			if($str == 1) echo "x".($i+1);
@@ -132,7 +132,7 @@ else{
 				<?php 
 			}
 			else{
-				if($i<$nb_variable+$nb_equation){
+				if($i<$nb_variable+$nb_equation+$nb_equation_suppl){
 					echo " + 0 x".($i+1);
 					?>
 					<input type="hidden" name="coef_x<?php echo $i+1?>" value="0/1">
@@ -151,7 +151,7 @@ else{
 
 echo ")<br><br>";
 ?>
-<?php for($i=0;$i<$nb_equation;$i++){
+<?php for($i=0;$i<$nb_equation+$nb_equation_suppl;$i++){
 	?>
 	<input type="hidden" name="operation<?php echo $i+1?>" value="<?php echo $operation[$i]?>">
 	<input type="hidden" name="b_numerique<?php echo $i?>" value="<?php echo $b[$i]["numerique"]["numerateur"] . "/" . $b[$i]["numerique"]["denominateur"]?>">
@@ -161,6 +161,7 @@ echo ")<br><br>";
 
 <input type="hidden" name="nb_variable" value="<?php echo $nb_variable?>">
 <input type="hidden" name="nb_equation" value="<?php echo $nb_equation?>">
+<input type="hidden" name="nb_equation_suppl" value="<?php echo $nb_equation_suppl?>">
 <input type="hidden" name="nb_variable_artificielle" value="<?php echo $nb_variable_artificielle?>">
 <input type="submit" value="Résoudre">
 </form>

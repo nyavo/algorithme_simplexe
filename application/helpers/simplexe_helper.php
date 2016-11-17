@@ -753,3 +753,25 @@ if( ! function_exists('compare_fraction')){
 		}
 	}
 }
+
+if( ! function_exists('negatif')){
+	function negatif($tab){
+		$negatif = true;
+		foreach ($tab as $value) {
+			if(signe($value) == 1) {
+				$negatif = false;
+				break;
+			}
+		}
+		return $negatif;
+	}
+}
+
+if( ! function_exists('oppose')){
+	function oppose($tab){
+		foreach ($tab as $key=>$value) {
+			$res[$key] = fraction_soustraction(transformation(0),$value);
+		}
+		return $res;
+	}
+}
