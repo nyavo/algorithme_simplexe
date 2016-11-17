@@ -1,0 +1,47 @@
+@CHARSET "ISO-8859-1";
+
+td{
+	font-size: 18px;	
+}
+
+input{
+	width: 45px;
+}
+
+.pivot{
+	background-color: black;	
+	font-style: oblique;
+	font-weight: bold;
+	font-family: monospace;
+	color: red;
+}
+
+body{
+	font-size: 16px;
+}
+
+.table tbody tr:hover td,
+.table tbody tr:hover th {
+	background-color: none !important;
+}
+
+.composant_pivot{
+	font: lighter;
+	background-color: white;
+	color: red;
+	font-family: monospace;
+	font-stretch: expanded;
+	font-style: oblique;
+}
+
+.initialisation{
+	font:
+}
+
+.navbar-inner > .container-fluid{
+	color : white;
+}
+
+select{
+	width : 50px;
+}
