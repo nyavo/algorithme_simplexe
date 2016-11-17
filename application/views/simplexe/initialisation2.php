@@ -12,6 +12,7 @@
         <select name="operation<?php echo $i+1?>">
         	<option value="inf">≤</option>
         	<option value="sup">≥</option>
+        	<option value="egal">=</option>
         </select>
          <input type="number" name="b_numerique<?php echo $i ?>">
         <?php

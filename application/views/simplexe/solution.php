@@ -30,7 +30,10 @@
 		<?php 
 		for($j=0;$j<$nb_equation+$nb_variable+$nb_variable_artificielle;$j++){
 			?>
-				<td><?php echo $matrice[$i][$j]?></td>
+				<td 
+				<?php 
+					echo ($i==$pivot['ligne'])&&($j==$pivot['colonne']) ? 'style="color: red"' : '';
+				?>> <?php echo affichage_fraction($matrice[$i][$j])?></td>
 			
 			<?php 
 		}
@@ -62,26 +65,26 @@
 	<?php for($i=0;$i<$nb_equation;$i++){
 		for($j=0;$j<$nb_equation+$nb_variable+$nb_variable_artificielle;$j++){
 			?>
-			<input type="hidden" name="<?php echo $i.$j?>" value="<?php echo $matrice[$i][$j]?>">
+			<input type="hidden" name="<?php echo $i.$j?>" value="<?php echo $matrice[$i][$j]['numerateur'].'/'.$matrice[$i][$j]['denominateur']?>">
 			<?php 
 		}
 		?>
-		<input type="hidden" name="b_numerique<?php echo $i?>" value="<?php echo $b[$i]['numerique']?>">
-		<input type="hidden" name="b_litterale<?php echo $i?>" value="<?php echo $b[$i]['litterale']?>">
+		<input type="hidden" name="b_numerique<?php echo $i?>" value="<?php echo $b[$i]['numerique']['numerateur'].'/'.$b[$i]['numerique']['denominateur']?>">
+		<input type="hidden" name="b_litterale<?php echo $i?>" value="<?php echo $b[$i]['litterale']['numerateur'].'/'.$b[$i]['litterale']['denominateur']?>">
 		<input type="hidden" name="indice<?php echo $i?>" value="<?php echo $var_coef_base[$i]['indice']?>">
 		<input type="hidden" name="lib_coef_z<?php echo $i?>" value="<?php echo $var_coef_base[$i]['libelle']?>">
-		<input type="hidden" name="var_coef_base_numerique<?php echo $i?>" value="<?php echo $var_coef_base[$i]['numerique']?>">
-		<input type="hidden" name="var_coef_base_litterale<?php echo $i?>" value="<?php echo $var_coef_base[$i]['litterale']?>"><br><br>
+		<input type="hidden" name="var_coef_base_numerique<?php echo $i?>" value="<?php echo $var_coef_base[$i]['numerique']['numerateur'].'/'.$var_coef_base[$i]['numerique']['denominateur']?>">
+		<input type="hidden" name="var_coef_base_litterale<?php echo $i?>" value="<?php echo $var_coef_base[$i]['litterale']['numerateur'].'/'.$var_coef_base[$i]['litterale']['denominateur']?>"><br><br>
 		<?php
 	}?>
 	<?php for($i=0;$i<$nb_equation+$nb_variable+$nb_variable_artificielle;$i++) {
 		?>
-		<input type="hidden" name="coef_dans_z_numerique<?php echo $i?>" value="<?php echo $coef_dans_z[$i]["numerique"]?>">
-		<input type="hidden" name="coef_dans_z_litterale<?php echo $i?>" value="<?php echo $coef_dans_z[$i]["litterale"]?>">
-		<input type="hidden" name="ZJ_numerique<?php echo $i?>" value="<?php echo $ZJ[$i]["numerique"]?>">
-		<input type="hidden" name="ZJ_litterale<?php echo $i?>" value="<?php echo $ZJ[$i]["litterale"]?>">
-		<input type="hidden" name="DJ_numerique<?php echo $i?>" value="<?php echo $delta_J[$i]["numerique"]?>">
-		<input type="hidden" name="DJ_litterale<?php echo $i?>" value="<?php echo $delta_J[$i]["litterale"]?>">
+		<input type="hidden" name="coef_dans_z_numerique<?php echo $i?>" value="<?php echo $coef_dans_z[$i]["numerique"]['numerateur'].'/'.$coef_dans_z[$i]["numerique"]['denominateur']?>">
+		<input type="hidden" name="coef_dans_z_litterale<?php echo $i?>" value="<?php echo $coef_dans_z[$i]["litterale"]['numerateur'].'/'.$coef_dans_z[$i]["litterale"]['denominateur']?>">
+		<input type="hidden" name="ZJ_numerique<?php echo $i?>" value="<?php echo $ZJ[$i]["numerique"]['numerateur'].'/'.$ZJ[$i]["numerique"]['denominateur']?>">
+		<input type="hidden" name="ZJ_litterale<?php echo $i?>" value="<?php echo $ZJ[$i]["litterale"]['numerateur'].'/'.$ZJ[$i]["litterale"]['denominateur']?>">
+		<input type="hidden" name="DJ_numerique<?php echo $i?>" value="<?php echo $delta_J[$i]["numerique"]['numerateur'].'/'.$delta_J[$i]["numerique"]['denominateur']?>">
+		<input type="hidden" name="DJ_litterale<?php echo $i?>" value="<?php echo $delta_J[$i]["litterale"]['numerateur'].'/'.$delta_J[$i]["litterale"]['denominateur']?>">
 		<?php 
 	}?>
 	<input type="hidden" name="nb_variable" value="<?php echo $nb_variable?>">
