@@ -5,33 +5,68 @@ class solution extends  MY_Controller {
 		parent::__construct();
 	}
 
+
 	public function index(){
 		$data['nb_variable'] = $nb_variable = $this->input->post('nb_variable');
 		$data['nb_equation'] = $nb_equation = $this->input->post('nb_equation');
+		$data['nb_variable_artificielle'] = $nb_variable_artificielle = $this->input->post('nb_variable_artificielle');
 		$data['type']= $type = $this->input->post('type');
 		$matrice=array();
 		$coef_dans_z = array();
 		$b = array();
 		$var_coef_base = array();
+		$operation = array();
 		for($i=0;$i<$nb_equation;$i++){
-			for($j=0;$j<$nb_variable+$nb_equation;$j++){
+			$operation[$i] = $this->input->post('operation'.($i+1));
+			for($j=0;$j<$nb_variable+$nb_equation+$nb_variable_artificielle;$j++){
 				$val = $this->input->post($i.$j) ? $this->input->post($i.$j):"0";
 				$matrice[$i][$j] = $val;
-				$val = $this->input->post("coef_x".($j+1)) ? $this->input->post("coef_x".($j+1)):"0";
-				$coef_dans_z[$j] = $type == 'max' ? $val : (-$val);
-
-				if($j>=$nb_variable) {
-					$var_coef_base[$j-$nb_variable]["coef"] = $val;
-					$var_coef_base[$j-$nb_variable]["libelle"] = "x".($j+1);
+				if($j<$nb_variable+$nb_equation){
+					$val = $this->input->post("coef_x".($j+1)) ? $this->input->post("coef_x".($j+1)): 0 ;
+					$coef_dans_z[$j]["numerique"] = $val;
+					$coef_dans_z[$j]["litterale"] = 0;
 				}
+				else{
+					//$val = "- M";
+					$coef_dans_z[$j]["numerique"] = 0;
+					$coef_dans_z[$j]["litterale"] = -1;
+				}
+				//$coef_dans_z[$j] = $val;
 			}
-			$b[$i] = $this->input->post("b".$i) ? $this->input->post("b".$i):"0";
+			$b[$i]['numerique'] = $this->input->post("b_numerique".$i) ?  $this->input->post("b_numerique".$i) : 0;
+			$b[$i]['litterale'] = $this->input->post("b_litterale".$i) ?  $this->input->post("b_litterale".$i) : 0;
 		}
+
+		//initialisation des variables de basess
+		$j=0;
+		for($i=0;$i<$nb_equation;$i++){
+			if($operation[$i]=="inf"){
+				$var_coef_base[$i]["numerique"] = $coef_dans_z[$nb_variable + $j]["numerique"];
+				$var_coef_base[$i]["litterale"] = $coef_dans_z[$nb_variable + $j]["litterale"];
+				$var_coef_base[$i]["libelle"] = "x".($nb_variable + $i + 1);
+				$var_coef_base[$i]["indice"] = $nb_variable + $i + 1;
+
+			}
+			else{
+				$var_coef_base[$i]["numerique"] = $coef_dans_z[$nb_variable + $nb_equation + $j]["numerique"];
+				$var_coef_base[$i]["litterale"] = $coef_dans_z[$nb_variable + $nb_equation + $j]["litterale"];
+				$var_coef_base[$i]["libelle"] = "x".($nb_variable + $nb_equation + $j + 1);
+				$var_coef_base[$i]["indice"] = $nb_variable + $nb_equation + $j + 1;
+				$j++;
+			}
+		}
+
+		$data['operation'] = $operation;
 		$data['b'] = $b;
 		$data['coef_dans_z'] = $coef_dans_z;
-		$data['ZJ'] = $ZJ = calcul_ZJ($var_coef_base, $matrice, $nb_variable, $nb_equation);
-		$data['delta_J'] = $delat_J = delta_J($coef_dans_z, $ZJ, $nb_equation+$nb_variable);
+
+		//var_dump($var_coef_base);
+		$data['ZJ'] = $ZJ = calcul_ZJ($var_coef_base, $matrice, $nb_variable, $nb_equation, $nb_variable_artificielle);
+		//var_dump($ZJ);
+		$data['delta_J'] = $delta_J = delta_J($coef_dans_z, $ZJ, $nb_equation+$nb_variable+$nb_variable_artificielle);
+		//var_dump($delta_J);
 		$data['Z'] = calcul_res_Z($b, $var_coef_base, $nb_equation);
+		//var_dump(calcul_res_Z($b, $var_coef_base, $nb_equation));
 		$data['var_coef_base']=$var_coef_base;
 		$data['matrice'] = $matrice;
 		$this->output->set_title('Solution');
@@ -42,6 +77,7 @@ class solution extends  MY_Controller {
 		$this->output->set_title('Solution');
 		$data['nb_equation'] = $nb_equation = $this->input->post('nb_equation');
 		$data['nb_variable'] = $nb_variable = $this->input->post('nb_variable');
+		$data['nb_variable_artificielle'] = $nb_variable_artificielle = $this->input->post("nb_variable_artificielle");
 		$data['type'] = $type = $this->input->post('type');
 		$matrice = array();
 		$coef_dans_z = array();
@@ -49,36 +85,62 @@ class solution extends  MY_Controller {
 		$var_coef_base = array();
 		$delta_J_old = array();
 		$b = array();
+
+		//initialisation de la matrice et des coefficients et des contraintes B
 		for($i=0;$i<$nb_equation;$i++){
-			for($j=0;$j<$nb_equation+$nb_variable;$j++){
-				$val = $this->input->post($i.$j) ? $this->input->post($i.$j):"0";
+			for($j=0;$j<$nb_equation+$nb_variable+$nb_variable_artificielle;$j++){
+				$val = $this->input->post($i.$j) ? $this->input->post($i.$j): 0 ;
 				$matrice[$i][$j] = $val;
-				$val = $this->input->post("coef_dans_z".$j) ? $this->input->post("coef_dans_z".$j):"0";
-				$coef_dans_z[$j] = $val;
-				$val = $this->input->post("ZJ".$j) ? $this->input->post("ZJ".$j):"0";
-				$ZJ[$j] = $val;
-				$val = $this->input->post("DJ".$j) ? $this->input->post("DJ".$j):"0";
-				$delta_J_old[$j] = $val;
 			}
-			$val = $this->input->post("var_coef_base".$i) ? $this->input->post("var_coef_base".$i):"0";
-			$var_coef_base[$i]['coef'] = $val;
+			$num = $this->input->post("var_coef_base_numerique".$i) ? $this->input->post("var_coef_base_numerique".$i):"0";
+			$litter = $this->input->post("var_coef_base_litterale".$i) ? $this->input->post("var_coef_base_litterale".$i):"0";
+			$var_coef_base[$i]['numerique'] = $num;
+			$var_coef_base[$i]['litterale'] = $litter;
 			$val = $this->input->post("lib_coef_z".$i) ? $this->input->post("lib_coef_z".$i):"0";
 			$var_coef_base[$i]['libelle'] = $val;
-			$b[$i] = $this->input->post("b".$i) ? $this->input->post("b".$i):"0";
+			$val = $this->input->post("indice".$i) ? $this->input->post("indice".$i):"0";
+			$var_coef_base[$i]['indice'] = $val;
+			$b[$i]["numerique"] = $this->input->post("b_numerique".$i) ? $this->input->post("b_numerique".$i):"0";
+			$b[$i]["litterale"] = $this->input->post("b_litterale".$i) ? $this->input->post("b_litterale".$i):"0";
+		}
+
+		for($j=0;$j<$nb_equation+$nb_variable+$nb_variable_artificielle;$j++){
+			//initialisation de la coefficient dans z
+			$num = $this->input->post("coef_dans_z_numerique".$j) ? $this->input->post("coef_dans_z_numerique".$j):0;
+			$litter = $this->input->post("coef_dans_z_litterale".$j) ? $this->input->post("coef_dans_z_litterale".$j):0;
+			$coef_dans_z[$j]["numerique"] = $num;
+			$coef_dans_z[$j]["litterale"] = $litter;
+
+			//initialisation de Zj
+			$num = $this->input->post("ZJ_numerique".$j) ? $this->input->post("ZJ_numerique".$j): 0 ;
+			$litter = $this->input->post("ZJ_litterale".$j) ? $this->input->post("ZJ_litterale".$j): 0 ;
+			$ZJ[$j]["numerique"] = $num;
+			$ZJ[$j]["litterale"] = $litter;
+				
+			//initialisation de deltaJ
+			$num = $this->input->post("DJ_numerique".$j) ? $this->input->post("DJ_numerique".$j):"0";
+			$litter = $this->input->post("DJ_litterale".$j) ? $this->input->post("DJ_litterale".$j):"0";
+			$delta_J_old[$j]["numerique"] = $num;
+			$delta_J_old[$j]["litterale"] = $litter;
 		}
 		//$delta_J = delta_J($coef_dans_z, $ZJ, $nb_equation+$nb_variable);
-		$entrant = entrant($delta_J_old, $type, $coef_dans_z);
-		$sortant = sortant($b, $matrice, $entrant, $nb_equation);
+		$entrant = entrant($delta_J_old, $coef_dans_z, $nb_variable_artificielle);
+		//var_dump($entrant);
+		$sortant = sortant($b, $matrice, $entrant, $nb_equation, $var_coef_base, $nb_variable_artificielle);
+		//var_dump($sortant);
 		$pivot = pivot($matrice, $entrant, $sortant);
-		$res_tmp = pivotage($matrice, $pivot, $var_coef_base, $nb_variable, $nb_equation, $entrant,$b);
+		//var_dump($pivot);
+		$res_tmp = pivotage($matrice, $pivot, $var_coef_base, $nb_variable, $nb_equation, $nb_variable_artificielle, $entrant,$b,$coef_dans_z);
+		//var_dump($res_tmp);
 		$data['b']=$res_tmp['b'];
 		//$data['ZJ']=$res_tmp['var_coef_base'];
-		$data['ZJ'] = $ZJ = calcul_ZJ($res_tmp['var_coef_base'], $res_tmp['matrice'], $nb_variable, $nb_equation);
-		$data['delta_J']=delta_J($coef_dans_z, $ZJ, $nb_equation+$nb_variable);
+		$data['ZJ'] = $ZJ = calcul_ZJ($res_tmp['var_coef_base'], $res_tmp['matrice'], $nb_variable, $nb_equation, $nb_variable_artificielle);
+		//var_dump($ZJ);
+		$data['delta_J']=delta_J($res_tmp["coef_dans_z"], $ZJ, $nb_equation+$nb_variable+$nb_variable_artificielle);
 		$data['Z']=calcul_res_Z($res_tmp['b'], $res_tmp['var_coef_base'], $nb_equation);
 		$data['matrice']=$res_tmp['matrice'];
 		$data['var_coef_base']=$res_tmp['var_coef_base'];
-		$data['coef_dans_z']=$coef_dans_z;
+		$data['coef_dans_z']=$res_tmp["coef_dans_z"];
 		$this->load->view('simplexe/solution',$data);
 	}
 }
