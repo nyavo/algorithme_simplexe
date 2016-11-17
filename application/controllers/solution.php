@@ -62,14 +62,14 @@ class solution extends  MY_Controller {
 			if($operation[$i]=="inf"){
 				$var_coef_base[$i]["numerique"] = $coef_dans_z[$nb_variable + $j]["numerique"];
 				$var_coef_base[$i]["litterale"] = $coef_dans_z[$nb_variable + $j]["litterale"];
-				$var_coef_base[$i]["libelle"] = "x".($nb_variable + $i + 1);
+				$var_coef_base[$i]["libelle"] = "x<sub>".($nb_variable + $i + 1)."</sub";
 				$var_coef_base[$i]["indice"] = $nb_variable + $i + 1;
 
 			}
 			else{
 				$var_coef_base[$i]["numerique"] = $coef_dans_z[$nb_variable + $nb_equation + $j]["numerique"];
 				$var_coef_base[$i]["litterale"] = $coef_dans_z[$nb_variable + $nb_equation + $j]["litterale"];
-				$var_coef_base[$i]["libelle"] = "x".($nb_variable + $nb_equation + $j+1);
+				$var_coef_base[$i]["libelle"] = "x<sub>".($nb_variable + $nb_equation + $j+1)."</sub>";
 				$var_coef_base[$i]["indice"] = $nb_variable + $nb_equation + $j;
 				$j++;
 			}

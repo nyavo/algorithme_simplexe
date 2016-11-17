@@ -58,7 +58,7 @@ if ( ! function_exists('maximum'))
 			$ind_max = 0;
 			$res['value'] = $coef_dans_z[$ind_max];
 			$res['indice'] = $ind_max;
-			$res['libelle'] = "x".($ind_max+1);
+			$res['libelle'] = "x<sub>".($ind_max+1)."</sub>";
 
 			if($nb_variable_artificielle != 0){
 				foreach ($tab as $key => $value) {
@@ -66,7 +66,7 @@ if ( ! function_exists('maximum'))
 						$max = $coef_dans_z[$i];
 						$res['value'] = $max;
 						$res['indice']= $ind_max = $i;
-						$res['libelle'] = "x".($i+1);
+						$res['libelle'] = "x<sub>".($i+1)."</sub>";
 					}
 					else{
 						if(compare_fraction($value['litterale'],$tab[$ind_max]["litterale"])==0){
@@ -74,7 +74,7 @@ if ( ! function_exists('maximum'))
 								$max = $value;
 								$res['value'] = $coef_dans_z[$i];
 								$res['indice']= $ind_max = $i;
-								$res['libelle'] = "x".($i+1);
+								$res['libelle'] = "x<sub>".($i+1)."</sub>";
 							}
 							/*else{
 								//var_dump($coef_dans_z[$i]);
@@ -93,7 +93,7 @@ if ( ! function_exists('maximum'))
 						$max = $value;
 						$res['value'] = $coef_dans_z[$i];
 						$res['indice'] = $ind_max = $i;
-						$res['libelle'] = "x".($i+1);
+						$res['libelle'] = "x<sub>".($i+1)."</sub>";
 					}
 					$i++;
 				}
@@ -363,16 +363,20 @@ if ( ! function_exists('litterale')){
 	function litterale($val){
 		$str = "";
 		if(signe($val) < 0){
-			switch (affichage_fraction($val)){
-				case (-1) : $str = "- M"; break;
+			if(abs($val["numerateur"])==1 && abs($val['denominateur']==1)) $str = "- M";
+			else $str = affichage_fraction($val)."M";
+			/*switch (affichage_fraction($val)){
+				case ('-1') : $str = "- M"; break;
 				default: $str = affichage_fraction($val)."M"; break;
-			}
+			}*/
 		}
 		else{
-			switch (affichage_fraction($val)){
+			if(abs($val["numerateur"])==1 && abs($val['denominateur']==1)) $str = "M";
+			else $str = affichage_fraction($val) ." M";
+			/*switch (affichage_fraction($val)){
 				case (1) : $str = "M"; break;
 				default: $str = affichage_fraction($val) ." M"; break;
-			}
+			}*/
 		}
 		return $str;
 	}
@@ -384,13 +388,13 @@ if ( ! function_exists('litterale_numerique')){
 		$val = $litterale;
 		if(signe($val) < 0){
 			switch (affichage_fraction($val)){
-				case (-1) : $str = $str . " - M"; break;
+				case ('-1') : $str = $str . " - M"; break;
 				default: $str = $str . " ".affichage_fraction($val)."M"; break;
 			}
 		}
 		else{
 			switch (affichage_fraction($val)){
-				case (1) : $str = $str . " + M"; break;
+				case ('1') : $str = $str . " + M"; break;
 				default: $str = $str. " + ". affichage_fraction($val) ."M"; break;
 			}
 		}
@@ -430,13 +434,13 @@ if ( ! function_exists('litterale_eps')){
 		$str = "";
 		if(signe($val) < 0){
 			switch (affichage_fraction($val)){
-				case (-1) : $str = "- e"; break;
+				case ('-1') : $str = "- e"; break;
 				default: $str = affichage_fraction($val)."e"; break;
 			}
 		}
 		else{
 			switch (affichage_fraction($val)){
-				case (1) : $str = "e"; break;
+				case ('1') : $str = "e"; break;
 				default: $str = affichage_fraction($val) ." e"; break;
 			}
 		}
@@ -450,13 +454,13 @@ if ( ! function_exists('litterale_numerique_eps')){
 		$val = $litterale;
 		if(signe($val) < 0){
 			switch (affichage_fraction($val)){
-				case (-1) : $str = $str . " - e"; break;
+				case ('-1') : $str = $str . " - e"; break;
 				default: $str = $str . " ".affichage_fraction($val)."e"; break;
 			}
 		}
 		else{
 			switch (affichage_fraction($val)){
-				case (1) : $str = $str . " + e"; break;
+				case ('1') : $str = $str . " + e"; break;
 				default: $str = $str. " + ". affichage_fraction($val) ."e"; break;
 			}
 		}
@@ -747,6 +751,7 @@ if( ! function_exists('fraction_soustraction')){
 
 if( ! function_exists('fraction_multiplication')){
 	function fraction_multiplication($a,$b){
+		//var_dump($a,$b);
 		$num = $a["numerateur"]*$b['numerateur'];
 		$denom = $a['denominateur']*$b['denominateur'];
 		if($num*$denom<0) {
@@ -810,6 +815,8 @@ if( ! function_exists('negatif')){
 if( ! function_exists('oppose')){
 	function oppose($tab){
 		foreach ($tab as $key=>$value) {
+			/*$res[$key] = abs($value);
+			$res[$key] = abs($value);*/
 			$res[$key] = fraction_soustraction(transformation(0),$value);
 		}
 		return $res;

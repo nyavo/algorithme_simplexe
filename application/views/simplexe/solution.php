@@ -14,11 +14,11 @@
 		<th colspan="2" style="text-align:center;"><h3>Base</h3></th>
 		<?php for($i=0;$i<$nb_equation+$nb_variable+$nb_variable_artificielle;$i++){
 		?>
-		<td><h3>x<?php echo $i+1?></h3></td>
+		<td><h3>x<sub><?php echo $i+1?></sub></h3></td>
 		<?php
 		}?>
-		<th><h3>bi</h3></th>
-		<?php if(!isset($ok)){?><th><h3>bi/xij</h3></th><?php }?>
+		<th><h3>b<sub>i</sub></h3></th>
+		<?php if(!isset($ok)){?><th><h3>b<sub>i</sub>/x<sub>ij</sub></h3></th><?php }?>
 	</tr>
 	<tr>
 		<th><h3>Coef. Z</h3></th>
@@ -107,19 +107,23 @@
 <?php if(isset($ok) && $ok==true){?>
 	<h1>Solution</h1><br>
 	<?php for($i=0;$i<$nb_variable;$i++){?>
-	<div class="row"><h3>x<?php echo $i+1;?> = <?php echo affichage_expression($resultat[$i])?></h3></div>
+	<div class="row"><h3>x<sub><?php echo $i+1;?></sub> = <?php echo affichage_expression($resultat[$i])?></h3></div>
 <?php }
 ?><br>
 <div class="row"><h3>Z = <?php {
+	//var_dump($multiplicateur);
+	//echo '---';*/
 	if($type == "min") {
-		$Z["numerique"] = oppose($Z["numerique"]);
-		$Z["litterale"] = oppose($Z["litterale"]);
+		$Z["numerique"]['numerateur'] = abs($Z["numerique"]['numerateur']);
+		$Z["numerique"]['denominateur'] = abs($Z["numerique"]['denominateur']);
+		$Z["litterale"]['numerateur'] = abs($Z["litterale"]['numerateur']);
+		$Z["litterale"]['denominateur'] = abs($Z["litterale"]['denominateur']);
 	}
+	//var_dump($Z);
 	$Z_final["numerique"] = fraction_multiplication($Z["numerique"],$multiplicateur);
 	$Z_final['litterale'] = fraction_multiplication($Z['litterale'],$multiplicateur);
-	echo affichage_expression($Z) . ' * ' . affichage_fraction($multiplicateur) . " = ";
+	if(($multiplicateur['numerateur']!=1 && $multiplicateur['denominateur']==1)||($multiplicateur['numerateur']==1 && $multiplicateur['denominateur']!=1)||($multiplicateur['numerateur']!=1 && $multiplicateur['denominateur']!=1)) echo affichage_expression($Z) . ' * ' . affichage_fraction($multiplicateur) . " = ";
 	echo affichage_expression($Z_final) . '</h3></div>';
-	
 	}
 }
 elseif(isset($pas_de_solution) && $pas_de_solution==true){

@@ -11,7 +11,7 @@ class initialisation extends  MY_Controller {
 		$data['nb_variable']=$this->input->post('nb_variable');
 		$data['nb_equation']=$this->input->post('nb_equation');
 		$data['type']=$this->input->post('type');
-		$this->load->view('simplexe/initialisation2',$data);
+		$this->load->view('simplexe/initialisation',$data);
 	}
 
 	public function generalisation(){
