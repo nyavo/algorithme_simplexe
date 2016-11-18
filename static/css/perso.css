@@ -49,3 +49,15 @@ select{
 .navbar .navbar-inner {
     background-color: white;
 }
+
+.center{
+	text-align : center;
+}
+
+.right{
+	text-align : right;
+}
+
+.left{
+	text-align : left;
+}
